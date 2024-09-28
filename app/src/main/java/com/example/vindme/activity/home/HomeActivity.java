@@ -2,6 +2,9 @@ package com.example.vindme.activity.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,11 +18,44 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {
 
+  TextView tvArtist;
+  TextView tvTitle;
+  TextView tvMessage;
+  Button btBeli;
+
+  String artist = "Ariana Grendel";
+  String title = "The Tortured Poets";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     EdgeToEdge.enable(this);
     setContentView(R.layout.activity_home);
+
+    tvArtist = findViewById(R.id.tvArtist);
+    tvTitle = findViewById(R.id.tvTitle);
+    btBeli = findViewById(R.id.btBuy);
+    tvMessage = findViewById(R.id.tvMessage);
+
+    tvArtist.setText(artist);
+    tvTitle.setText(title);
+
+    btBeli.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(getApplicationContext(), DetailPembelianActivity.class);
+
+        intent.putExtra("artist_name", artist);
+        intent.putExtra("album_title", title);
+
+        startActivity(intent);
+      }
+    });
+
+    Intent intent = getIntent();
+
+    String pesan = intent.getStringExtra("message");
+    tvMessage.setText(pesan);
 
     BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
     bottomNav.setSelectedItemId(R.id.home);
