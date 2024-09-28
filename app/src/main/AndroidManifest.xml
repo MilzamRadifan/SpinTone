@@ -13,15 +13,26 @@
         android:theme="@style/Theme.VindMe"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity2"
-            android:exported="true" >
+            android:name=".activity.profile.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.wishlist.WishlistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.cart.CartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.search.SearchActivity"
+            android:exported="false"
+            android:label="@string/title_activity_search" />
+        <activity
+            android:name=".activity.home.HomeActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
