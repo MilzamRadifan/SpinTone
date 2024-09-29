@@ -2,6 +2,9 @@ package com.example.vindme.activity.wishlist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,11 +18,38 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class WishlistActivity extends AppCompatActivity {
 
+TextView tvArtist, tvDescription, tvPrice;
+Button btBuy;
+
+String artis, deskripsi, harga;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     EdgeToEdge.enable(this);
     setContentView(R.layout.activity_wishlist);
+
+    tvArtist = findViewById(R.id.tvArtist);
+    tvDescription = findViewById(R.id.tvDescription);
+    tvPrice = findViewById(R.id.tvPrice);
+    btBuy = findViewById(R.id.btBuy);
+
+    artis = getIntent().getStringExtra("artis");
+    deskripsi = getIntent().getStringExtra("deskripsi");
+    harga = getIntent().getStringExtra("harga");
+
+    tvArtist.setText(artis);
+    tvDescription.setText(deskripsi);
+    tvPrice.setText("Rp. " + harga);
+
+    btBuy.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(getApplicationContext(), AddWishlistActivity.class);
+        intent.putExtra("pesan", "sold");
+        startActivity(intent);
+      }
+    });
 
     BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
     bottomNav.setSelectedItemId(R.id.wishlist);
