@@ -52,7 +52,17 @@
     app:layout_constraintStart_toStartOf="@+id/tvTitle"
     app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
-<!--  <Button-->
+  <TextView
+    android:id="@+id/tvDetail"
+    android:layout_width="340dp"
+    android:layout_height="300dp"
+    android:layout_marginTop="20dp"
+    android:textColor="@color/black"
+    android:textSize="14dp"
+    app:layout_constraintStart_toStartOf="@+id/tvPrice"
+    app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
+
+  <!--  <Button-->
 <!--    android:id="@+id/btBuy"-->
 <!--    android:layout_width="wrap_content"-->
 <!--    android:layout_height="wrap_content"-->

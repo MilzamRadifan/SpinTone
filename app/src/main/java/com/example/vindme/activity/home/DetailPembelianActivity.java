@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.vindme.R;
 
 public class DetailPembelianActivity extends AppCompatActivity {
@@ -18,8 +19,9 @@ public class DetailPembelianActivity extends AppCompatActivity {
   TextView tvArtist;
   TextView tvTitle;
   TextView tvPrice;
-//  Button btBuy;
+  TextView tvDetail;
   ImageView ivCover;
+//  Button btBuy;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -29,26 +31,26 @@ public class DetailPembelianActivity extends AppCompatActivity {
 
     tvArtist = findViewById(R.id.tvArtist);
     tvTitle = findViewById(R.id.tvTitle);
-//    btBuy = findViewById(R.id.btBuy);
     tvPrice = findViewById(R.id.tvPrice);
     ivCover = findViewById(R.id.ivCover);
+    tvDetail = findViewById(R.id.tvDetail);
+//    btBuy = findViewById(R.id.btBuy);
 
     Intent intent = getIntent();
-    int coverAlbum = intent.getIntExtra("coverAlbum", -1);
+    String cover = intent.getStringExtra("cover");
+    String title = intent.getStringExtra("title");
     String artist = intent.getStringExtra("artist");
-    String album = intent.getStringExtra("album");
+    String detail = intent.getStringExtra("detail");
     String price = intent.getStringExtra("price");
     String pesan = intent.getStringExtra("pesan");
 
-    if (coverAlbum != -1) {
-      ivCover.setImageResource(coverAlbum);
-    }
+    Glide.with(getApplicationContext()).load(cover).into(ivCover);
     tvArtist.setText(artist);
-    tvTitle.setText(album);
+    tvTitle.setText(title);
     tvPrice.setText(price);
+    tvDetail.setText(detail);
 
     Toast.makeText(getApplicationContext(), pesan, Toast.LENGTH_SHORT).show();
-
 
 //    btBuy.setOnClickListener(new View.OnClickListener() {
 //      @Override

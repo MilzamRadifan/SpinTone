@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.vindme.activity.cart.CartActivity;
 import com.example.vindme.activity.profile.ProfileActivity;
 import com.example.vindme.R;
@@ -27,15 +28,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-//  TextView tvArtist;
-//  TextView tvTitle;
-//  TextView tvMessage;
-//  Button btBeli;
-//
-//  String artist = "Ariana Grendel";
-//  String title = "The Tortured Poets";
+public class HomeActivity extends AppCompatActivity {
 
   RecyclerView recyclerView;
   HomeAdapter homeAdapter;
@@ -47,47 +46,13 @@ public class HomeActivity extends AppCompatActivity {
     EdgeToEdge.enable(this);
     setContentView(R.layout.activity_home);
 
-    // Progress dua - Recycle View
     recyclerView = findViewById(R.id.rvHome);
     albumList = new ArrayList<>();
-
-    albumList.add(new Album( R.drawable.sting, "Sting", "57th & 9th Vinyl", "675,000"));
-    albumList.add(new Album(R.drawable.queen_theworks, "Queen", "The Works Vinyl", "450,000"));
-    albumList.add(new Album(R.drawable.eltonjohn_tlfz,  "Elton John", "Too Low For Zero Vinyl", "625.000"));
-    albumList.add(new Album(R.drawable.taylor_swift,  "Taylor Swift", "The Tortured Poets Department Vinyl", "699,000"));
-    albumList.add(new Album(R.drawable.rihanna_goodgirlgonebad,  "Rihanna", "Good Girl Gone Bad Vinyl", "485,000"));
-    albumList.add(new Album(R.drawable.ariana_grande,  "Ariana Grande", "Eternal Sunshine Vinyl", "599,000"));
-    albumList.add(new Album(R.drawable.billie_eillish, "Billie Eilish", "HIT ME HARD AND SOFT Vinyl", "585,000"));
-
     homeAdapter = new HomeAdapter(this, albumList);
     recyclerView.setAdapter(homeAdapter);
     recyclerView.setLayoutManager(new GridLayoutManager(this,2));
 
-
-//    tvArtist = findViewById(R.id.tvArtist);
-//    tvTitle = findViewById(R.id.tvTitle);
-//    btBeli = findViewById(R.id.btBuy);
-//    tvMessage = findViewById(R.id.tvMessage);
-//
-//    tvArtist.setText(artist);
-//    tvTitle.setText(title);
-//
-//    btBeli.setOnClickListener(new View.OnClickListener() {
-//      @Override
-//      public void onClick(View v) {
-//        Intent intent = new Intent(getApplicationContext(), DetailPembelianActivity.class);
-//
-//        intent.putExtra("artist_name", artist);
-//        intent.putExtra("album_title", title);
-//
-//        startActivity(intent);
-//      }
-//    });
-//
-//    Intent intent = getIntent();
-//
-//    String pesan = intent.getStringExtra("message");
-//    tvMessage.setText(pesan);
+    fetchAlbums();
 
     BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
     bottomNav.setSelectedItemId(R.id.home);
@@ -110,9 +75,37 @@ public class HomeActivity extends AppCompatActivity {
       }
       return false;
     });
+  }
 
+  private void fetchAlbums() {
+    Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl("http://10.0.2.2/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build();
+
+    ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+    Call<List<Album>> call = apiInterface.getAlbum();
+
+    call.enqueue(new Callback<List<Album>>() {
+      @Override
+      public void onResponse(Call<List<Album>> call, Response<List<Album>> response) {
+        if (response.isSuccessful() && response.body() != null) {
+          albumList.clear();
+          albumList.addAll(response.body());
+          homeAdapter.notifyDataSetChanged();
+        } else {
+          Toast.makeText(HomeActivity.this, "Gagal mengambil data", Toast.LENGTH_SHORT).show();
+        }
+      }
+
+      @Override
+      public void onFailure(Call<List<Album>> call, Throwable t) {
+        Toast.makeText(HomeActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+      }
+    });
   }
 }
+
 
 class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
 
@@ -127,14 +120,14 @@ class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
   public class HomeViewHolder extends RecyclerView.ViewHolder {
 
     ImageView ivCover;
-    TextView tvArtist, tvAlbum, tvPrice;
+    TextView tvArtist, tvTitle, tvPrice;
 
 
     public HomeViewHolder(@NonNull View itemView) {
       super(itemView);
       ivCover = itemView.findViewById(R.id.ivCover);
       tvArtist = itemView.findViewById(R.id.tvArtist);
-      tvAlbum = itemView.findViewById(R.id.tvAlbum);
+      tvTitle = itemView.findViewById(R.id.tvTitle);
       tvPrice = itemView.findViewById(R.id.tvPrice);
     }
   }
@@ -149,21 +142,22 @@ class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
   @Override
   public void onBindViewHolder(@NonNull HomeAdapter.HomeViewHolder holder, int position) {
     Album album = albumList.get(position);
-    holder.ivCover.setImageResource(album.getCoverAlbum());
-    holder.tvArtist.setText(album.getArtis());
-    holder.tvAlbum.setText(album.getAlbum());
-    holder.tvPrice.setText(album.getHarga());
+    Glide.with(context).load(album.getCover()).into(holder.ivCover);
+    holder.tvArtist.setText(album.getArtist());
+    holder.tvTitle.setText(album.getTitle());
+    holder.tvPrice.setText(album.getPrice());
 
     holder.ivCover.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
 
         Intent intent = new Intent(context, DetailPembelianActivity.class);
-        intent.putExtra("coverAlbum", album.getCoverAlbum());
-        intent.putExtra("artist", album.getArtis());
-        intent.putExtra("album", album.getAlbum());
-        intent.putExtra("price", album.getHarga());
-        intent.putExtra("pesan", album.getAlbum() + " Detail Product");
+        intent.putExtra("cover", album.getCover());
+        intent.putExtra("title", album.getTitle());
+        intent.putExtra("artist", album.getArtist());
+        intent.putExtra("detail",album.getDetailAlbum());
+        intent.putExtra("price", album.getPrice());
+        intent.putExtra("pesan", album.getTitle() + " Detail Product");
         context.startActivity(intent);
       }
     });
