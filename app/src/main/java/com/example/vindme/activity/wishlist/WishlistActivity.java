@@ -2,9 +2,11 @@ package com.example.vindme.activity.wishlist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,16 +19,17 @@ import com.example.vindme.R;
 import com.example.vindme.activity.home.HomeActivity;
 import com.example.vindme.activity.search.SearchActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WishlistActivity extends AppCompatActivity {
-//
-//TextView tvArtist, tvDescription, tvPrice;
-//Button btBuy;
-//
-//String artis, deskripsi, harga;
 
   RecyclerView rvWishlist;
   WishlistAdapter wishlistAdapter;
@@ -42,38 +45,53 @@ public class WishlistActivity extends AppCompatActivity {
     rvWishlist = findViewById(R.id.rvWishlist);
     wishlistList = new ArrayList<>();
 
-    wishlistList.add(new Wishlist("Taylor Swift", "The Tortured Poets Department Vinyl", "699,000", R.drawable.taylor_swift));
-    wishlistList.add(new Wishlist("Ariana Grande", "eternal sunshine (exclusive cover no. 2) lp", "599,000", R.drawable.ariana_grande));
-    wishlistList.add(new Wishlist("Billie Eilish", "HIT ME HARD AND SOFT", "585,000", R.drawable.billie_eillish));
-    wishlistList.add(new Wishlist("Queen ", "The Works Vinyl", "450,000", R.drawable.queen_theworks));
-    wishlistList.add(new Wishlist("ABBA", "Arrival Vinyl", "515.000", R.drawable.abba_arrival));
-
     wishlistAdapter = new WishlistAdapter(this, wishlistList);
     rvWishlist.setAdapter(wishlistAdapter);
     rvWishlist.setLayoutManager(new GridLayoutManager(this, 1));
 
+    //Prgrest Rest API dan Thread
+    Thread th = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        String urlString = "http://10.0.2.2/ApiVindMe/apiWishlist.php";
+        try {
+          URL url = new URL(urlString);
+          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+          connection.setRequestMethod("GET");
+          connection.connect();
 
-//    tvArtist = findViewById(R.id.tvArtist);
-//    tvDescription = findViewById(R.id.tvDescription);
-//    tvPrice = findViewById(R.id.tvPrice);
-//    btBuy = findViewById(R.id.btBuy);
-//
-//    artis = getIntent().getStringExtra("artis");
-//    deskripsi = getIntent().getStringExtra("deskripsi");
-//    harga = getIntent().getStringExtra("harga");
-//
-//    tvArtist.setText(artis);
-//    tvDescription.setText(deskripsi);
-//    tvPrice.setText("Rp. " + harga);
-//
-//    btBuy.setOnClickListener(new View.OnClickListener() {
-//      @Override
-//      public void onClick(View v) {
-//        Intent intent = new Intent(getApplicationContext(), AddWishlistActivity.class);
-//        intent.putExtra("pesan", "sold");
-//        startActivity(intent);
-//      }
-//    });
+          int responseCode = connection.getResponseCode();
+          if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder jsonData = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+              jsonData.append(line);
+            }
+            reader.close();
+
+            Gson gson = new Gson();
+            List<Wishlist> apiWishlist = gson.fromJson(jsonData.toString(), new TypeToken<List<Wishlist>>(){}.getType());
+
+            runOnUiThread(() -> {
+              wishlistList.clear();
+              wishlistList.addAll(apiWishlist);
+              wishlistAdapter.notifyDataSetChanged();
+            });
+
+          } else {
+            Log.e("API_ERROR", "Error: " + responseCode);
+          }
+          connection.disconnect();
+        } catch (Exception e) {
+          Log.e("API_ERROR", "Error: " + e.getMessage());
+          runOnUiThread(() -> Toast.makeText(WishlistActivity.this, "Failed to fetch data", Toast.LENGTH_SHORT).show());
+        }
+      }
+    });
+
+    th.start();
 
     BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
     bottomNav.setSelectedItemId(R.id.wishlist);

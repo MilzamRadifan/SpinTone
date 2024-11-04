@@ -51,11 +51,12 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.Wishli
     holder.tvArtist.setText(wishlist.getNamaArtist());
     holder.tvDescription.setText(wishlist.getJudulAlbum());
     holder.tvPrice.setText("Rp. " + wishlist.getHargaAlbum());
-    holder.ivCover.setImageResource(wishlist.getCoverAlbum());
+//    holder.ivCover.setImageResource(wishlist.getCoverAlbum());
 
-    holder.ivCover.setOnClickListener(v -> {
-      Toast.makeText(context, wishlist.getJudulAlbum(), Toast.LENGTH_SHORT).show();
-    });
+//    holder.ivCover.setOnClickListener(v -> {
+//      Toast.makeText(context, wishlist.getJudulAlbum(), Toast.LENGTH_SHORT).show();
+//    });
+
   }
 
   @Override
