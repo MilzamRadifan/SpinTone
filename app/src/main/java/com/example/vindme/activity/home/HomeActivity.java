@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,10 +26,15 @@ import com.example.vindme.R;
 import com.example.vindme.activity.search.SearchActivity;
 import com.example.vindme.activity.wishlist.WishlistActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,9 +43,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeActivity extends AppCompatActivity {
 
-  RecyclerView recyclerView;
-  HomeAdapter homeAdapter;
-  List<Album> albumList;
+//  RecyclerView recyclerView;
+//  HomeAdapter homeAdapter;
+//  List<Album> albumList;
+  TextView tvActivity;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +54,18 @@ public class HomeActivity extends AppCompatActivity {
     EdgeToEdge.enable(this);
     setContentView(R.layout.activity_home);
 
-    recyclerView = findViewById(R.id.rvHome);
-    albumList = new ArrayList<>();
-    homeAdapter = new HomeAdapter(this, albumList);
-    recyclerView.setAdapter(homeAdapter);
-    recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+//    recyclerView = findViewById(R.id.rvHome);
+//    albumList = new ArrayList<>();
+//    homeAdapter = new HomeAdapter(this, albumList);
+//    recyclerView.setAdapter(homeAdapter);
+//    recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+//
+//    fetchAlbums();
 
-    fetchAlbums();
+    tvActivity = findViewById(R.id.tvActivity);
+    tvActivity.setText("Home");
+
+    loadFragment(new HomeFragment());
 
     BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
     bottomNav.setSelectedItemId(R.id.home);
@@ -77,33 +90,63 @@ public class HomeActivity extends AppCompatActivity {
     });
   }
 
-  private void fetchAlbums() {
-    Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl("http://10.0.2.2/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build();
-
-    ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-    Call<List<Album>> call = apiInterface.getAlbum();
-
-    call.enqueue(new Callback<List<Album>>() {
-      @Override
-      public void onResponse(Call<List<Album>> call, Response<List<Album>> response) {
-        if (response.isSuccessful() && response.body() != null) {
-          albumList.clear();
-          albumList.addAll(response.body());
-          homeAdapter.notifyDataSetChanged();
-        } else {
-          Toast.makeText(HomeActivity.this, "Gagal mengambil data", Toast.LENGTH_SHORT).show();
-        }
-      }
-
-      @Override
-      public void onFailure(Call<List<Album>> call, Throwable t) {
-        Toast.makeText(HomeActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-      }
-    });
+  private void loadFragment(Fragment fragment) {
+    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    transaction.replace(R.id.fragment_container, fragment);
+    transaction.commit();
   }
+
+//  private void fetchAlbums() {
+//    Thread thread = new Thread(new Runnable() {
+//      @Override
+//      public void run() {
+//        Retrofit retrofit = new Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2/ApiVindMe/")
+//            .build();
+//
+//        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+//        Call<ResponseBody> call = apiInterface.getAlbum();
+//
+//        call.enqueue(new Callback<ResponseBody>() {
+//          @Override
+//          public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//            if (response.isSuccessful() && response.body() != null) {
+//              try {
+//                String json = response.body().string();
+//
+//                Gson gson = new Gson();
+//                Type albumListType = new TypeToken<List<Album>>(){}.getType();
+//                List<Album> albums = gson.fromJson(json, albumListType);
+//
+//                runOnUiThread(new Runnable() {
+//                  @Override
+//                  public void run() {
+//                    albumList.clear();
+//                    albumList.addAll(albums);
+//                    homeAdapter.notifyDataSetChanged();
+//                  }
+//                });
+//
+//              } catch (IOException e) {
+//                e.printStackTrace();
+//                Toast.makeText(HomeActivity.this, "Error parsing data", Toast.LENGTH_SHORT).show();
+//              }
+//            } else {
+//              Toast.makeText(HomeActivity.this, "Gagal mengambil data", Toast.LENGTH_SHORT).show();
+//            }
+//          }
+//
+//          @Override
+//          public void onFailure(Call<ResponseBody> call, Throwable t) {
+//            Toast.makeText(HomeActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+//          }
+//        });
+//      }
+//    });
+//
+//    thread.start();
+//  }
+
 }
 
 
@@ -151,14 +194,34 @@ class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
       @Override
       public void onClick(View v) {
 
-        Intent intent = new Intent(context, DetailPembelianActivity.class);
-        intent.putExtra("cover", album.getCover());
-        intent.putExtra("title", album.getTitle());
-        intent.putExtra("artist", album.getArtist());
-        intent.putExtra("detail",album.getDetailAlbum());
-        intent.putExtra("price", album.getPrice());
-        intent.putExtra("pesan", album.getTitle() + " Detail Product");
-        context.startActivity(intent);
+//        Intent intent = new Intent(context, DetailPembelianActivity.class);
+//        intent.putExtra("cover", album.getCover());
+//        intent.putExtra("title", album.getTitle());
+//        intent.putExtra("artist", album.getArtist());
+//        intent.putExtra("detail",album.getDetailAlbum());
+//        intent.putExtra("price", album.getPrice());
+//        intent.putExtra("pesan", album.getTitle() + " Detail Product");
+//        context.startActivity(intent);
+
+        DetailPembelianFragment detailFragment = new DetailPembelianFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("cover", album.getCover());
+        bundle.putString("title", album.getTitle());
+        bundle.putString("artist", album.getArtist());
+        bundle.putString("detail", album.getDetailAlbum());
+        bundle.putString("price", album.getPrice());
+        bundle.putString("pesan", album.getTitle() + " Detail Product");
+
+        detailFragment.setArguments(bundle);
+
+        if (context instanceof AppCompatActivity) {
+          AppCompatActivity activity = (AppCompatActivity) context;
+          activity.getSupportFragmentManager().beginTransaction()
+              .replace(R.id.fragment_container, detailFragment)
+              .addToBackStack(null)
+              .commit();
+        }
       }
     });
   }
