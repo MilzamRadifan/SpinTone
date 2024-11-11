@@ -31,9 +31,9 @@ import java.util.List;
 
 public class WishlistActivity extends AppCompatActivity {
 
-  RecyclerView rvWishlist;
-  WishlistAdapter wishlistAdapter;
-  List<Wishlist> wishlistList;
+//  RecyclerView rvWishlist;
+//  WishlistAdapter wishlistAdapter;
+//  List<Wishlist> wishlistList;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -41,57 +41,63 @@ public class WishlistActivity extends AppCompatActivity {
     EdgeToEdge.enable(this);
     setContentView(R.layout.activity_wishlist);
 
-    //Progres Recycle view
-    rvWishlist = findViewById(R.id.rvWishlist);
-    wishlistList = new ArrayList<>();
+//    //Progres Recycle view
+//    rvWishlist = findViewById(R.id.rvWishlist);
+//    wishlistList = new ArrayList<>();
+//
+//    wishlistAdapter = new WishlistAdapter(this, wishlistList);
+//    rvWishlist.setAdapter(wishlistAdapter);
+//    rvWishlist.setLayoutManager(new GridLayoutManager(this, 1));
+//
+//    //Prgrest Rest API dan Thread
+//    Thread th = new Thread(new Runnable() {
+//      @Override
+//      public void run() {
+//        String urlString = "http://10.0.2.2/ApiVindMe/apiWishlist.php";
+//        try {
+//          URL url = new URL(urlString);
+//          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//          connection.setRequestMethod("GET");
+//          connection.connect();
+//
+//          int responseCode = connection.getResponseCode();
+//          if (responseCode == HttpURLConnection.HTTP_OK) {
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//            StringBuilder jsonData = new StringBuilder();
+//            String line;
+//
+//            while ((line = reader.readLine()) != null) {
+//              jsonData.append(line);
+//            }
+//            reader.close();
+//
+//            Gson gson = new Gson();
+//            List<Wishlist> apiWishlist = gson.fromJson(jsonData.toString(), new TypeToken<List<Wishlist>>(){}.getType());
+//
+//            runOnUiThread(() -> {
+//              wishlistList.clear();
+//              wishlistList.addAll(apiWishlist);
+//              wishlistAdapter.notifyDataSetChanged();
+//            });
+//
+//          } else {
+//            Log.e("API_ERROR", "Error: " + responseCode);
+//          }
+//          connection.disconnect();
+//        } catch (Exception e) {
+//          Log.e("API_ERROR", "Error: " + e.getMessage());
+//          runOnUiThread(() -> Toast.makeText(WishlistActivity.this, "Failed to fetch data", Toast.LENGTH_SHORT).show());
+//        }
+//      }
+//    });
+//
+//    th.start();
 
-    wishlistAdapter = new WishlistAdapter(this, wishlistList);
-    rvWishlist.setAdapter(wishlistAdapter);
-    rvWishlist.setLayoutManager(new GridLayoutManager(this, 1));
-
-    //Prgrest Rest API dan Thread
-    Thread th = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        String urlString = "http://10.0.2.2/ApiVindMe/apiWishlist.php";
-        try {
-          URL url = new URL(urlString);
-          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-          connection.setRequestMethod("GET");
-          connection.connect();
-
-          int responseCode = connection.getResponseCode();
-          if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder jsonData = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-              jsonData.append(line);
-            }
-            reader.close();
-
-            Gson gson = new Gson();
-            List<Wishlist> apiWishlist = gson.fromJson(jsonData.toString(), new TypeToken<List<Wishlist>>(){}.getType());
-
-            runOnUiThread(() -> {
-              wishlistList.clear();
-              wishlistList.addAll(apiWishlist);
-              wishlistAdapter.notifyDataSetChanged();
-            });
-
-          } else {
-            Log.e("API_ERROR", "Error: " + responseCode);
-          }
-          connection.disconnect();
-        } catch (Exception e) {
-          Log.e("API_ERROR", "Error: " + e.getMessage());
-          runOnUiThread(() -> Toast.makeText(WishlistActivity.this, "Failed to fetch data", Toast.LENGTH_SHORT).show());
-        }
-      }
-    });
-
-    th.start();
+    if (savedInstanceState == null) {
+      getSupportFragmentManager().beginTransaction()
+          .replace(R.id.fragment_container, new AddWishlistFragment())
+          .commit();
+    }
 
     BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
     bottomNav.setSelectedItemId(R.id.wishlist);

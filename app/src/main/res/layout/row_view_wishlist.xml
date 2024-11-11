@@ -20,11 +20,11 @@
     android:layout_height="30dp"
     android:layout_marginStart="20dp"
     android:text="TextView"
+    android:textColor="@color/brown"
     android:textColorHighlight="@color/brown"
     android:textSize="20dp"
     app:layout_constraintStart_toEndOf="@+id/ivCover"
-    app:layout_constraintTop_toTopOf="@+id/ivCover"
-    android:textColor="@color/brown"/>
+    app:layout_constraintTop_toTopOf="@+id/ivCover" />
 
   <TextView
     android:id="@+id/tvDescription"
@@ -40,27 +40,28 @@
     android:id="@+id/tvPrice"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="20dp"
+    android:layout_marginTop="10dp"
     android:text="TextView"
     android:textColor="@color/black"
-    app:layout_constraintBottom_toBottomOf="@+id/ivCover"
-    app:layout_constraintStart_toEndOf="@+id/ivCover" />
+    android:textSize="12dp"
+    app:layout_constraintStart_toStartOf="@+id/tvDescription"
+    app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
 
   <Button
     android:id="@+id/btBuy"
-    android:layout_width="80dp"
+    android:layout_width="70dp"
     android:layout_height="30dp"
-    android:layout_marginStart="15dp"
-    android:text="Buy Now"
     android:background="@color/brown"
+    android:text="Buy Now"
     android:textColor="@color/white"
-    app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
-    app:layout_constraintStart_toEndOf="@+id/tvPrice"
-    app:layout_constraintTop_toTopOf="@+id/tvPrice" />4
+    android:textSize="10dp"
+    app:layout_constraintBottom_toBottomOf="@+id/ivCover"
+    app:layout_constraintStart_toStartOf="@+id/tvPrice" />4
 
   <Button
-    android:layout_width="30dp"
-    android:layout_height="30dp"
+    android:id="@+id/button2"
+    android:layout_width="20dp"
+    android:layout_height="20dp"
     android:background="@drawable/trach_icon"
     android:backgroundTint="@color/brown"
     android:layout_marginStart="15dp"
