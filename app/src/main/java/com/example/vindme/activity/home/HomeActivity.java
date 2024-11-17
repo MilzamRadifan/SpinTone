@@ -93,6 +93,7 @@ public class HomeActivity extends AppCompatActivity {
   private void loadFragment(Fragment fragment) {
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     transaction.replace(R.id.fragment_container, fragment);
+    transaction.addToBackStack(null);
     transaction.commit();
   }
 
@@ -206,6 +207,7 @@ class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
         DetailPembelianFragment detailFragment = new DetailPembelianFragment();
 
         Bundle bundle = new Bundle();
+        bundle.putInt("albumId", album.getAlbumId());
         bundle.putString("cover", album.getCover());
         bundle.putString("title", album.getTitle());
         bundle.putString("artist", album.getArtist());

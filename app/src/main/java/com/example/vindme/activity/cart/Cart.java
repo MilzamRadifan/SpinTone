@@ -1,15 +1,27 @@
-package com.example.vindme.activity.home;
+package com.example.vindme.activity.cart;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-import java.io.Serializable;
+import com.example.vindme.activity.home.Album;
 
-@Entity(tableName = "Album")
-public class Album implements Serializable {
+@Entity(
+    tableName = "Cart",
+    foreignKeys = @ForeignKey(
+        entity = Album.class,
+        parentColumns = "albumId",
+        childColumns = "albumId",
+        onDelete = ForeignKey.CASCADE
+    )
+)
+public class Cart {
 
-  @PrimaryKey
+  @ColumnInfo(name = "cartId")
+  @PrimaryKey(autoGenerate = true)
+  private int cartId;
+
   @ColumnInfo(name = "albumId")
   private int albumId;
 
@@ -22,19 +34,25 @@ public class Album implements Serializable {
   @ColumnInfo(name = "artist")
   private String artist;
 
-  @ColumnInfo(name = "detailAlbum")
-  private String detailAlbum;
-
   @ColumnInfo(name = "price")
   private String price;
 
-  public Album(int albumId, String cover, String title, String artist, String detailAlbum, String price) {
+  public Cart() {}
+
+  public Cart(int albumId, String cover, String title, String artist, String price) {
     this.albumId = albumId;
     this.cover = cover;
     this.title = title;
     this.artist = artist;
-    this.detailAlbum = detailAlbum;
     this.price = price;
+  }
+
+  public int getCartId() {
+    return cartId;
+  }
+
+  public void setCartId(int cartId) {
+    this.cartId = cartId;
   }
 
   public int getAlbumId() {
@@ -67,14 +85,6 @@ public class Album implements Serializable {
 
   public void setArtist(String artist) {
     this.artist = artist;
-  }
-
-  public String getDetailAlbum() {
-    return detailAlbum;
-  }
-
-  public void setDetailAlbum(String detailAlbum) {
-    this.detailAlbum = detailAlbum;
   }
 
   public String getPrice() {

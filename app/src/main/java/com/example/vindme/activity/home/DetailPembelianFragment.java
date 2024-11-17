@@ -3,16 +3,24 @@ package com.example.vindme.activity.home;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.room.Room;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.vindme.R;
+import com.example.vindme.activity.cart.AppDatabase;
+import com.example.vindme.activity.cart.Cart;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +31,9 @@ public class DetailPembelianFragment extends Fragment {
 
   private TextView tvArtist, tvTitle, tvPrice, tvDetail;
   private ImageView ivCover;
+  private Button btCart;
+  private int albumId;
+  private String cover, title, artist, detail, price, pesan;
 
   // TODO: Rename parameter arguments, choose names that match
   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -75,14 +86,16 @@ public class DetailPembelianFragment extends Fragment {
     tvPrice = view.findViewById(R.id.tvPrice);
     ivCover = view.findViewById(R.id.ivCover);
     tvDetail = view.findViewById(R.id.tvDetail);
+    btCart = view.findViewById(R.id.btCart);
 
     if (getArguments() != null) {
-      String cover = getArguments().getString("cover");
-      String title = getArguments().getString("title");
-      String artist = getArguments().getString("artist");
-      String detail = getArguments().getString("detail");
-      String price = getArguments().getString("price");
-      String pesan = getArguments().getString("pesan");
+      albumId = getArguments().getInt("albumId");
+      cover = getArguments().getString("cover");
+      title = getArguments().getString("title");
+      artist = getArguments().getString("artist");
+      detail = getArguments().getString("detail");
+      price = getArguments().getString("price");
+      pesan = getArguments().getString("pesan");
 
       Glide.with(requireContext()).load(cover).into(ivCover);
       tvArtist.setText(artist);
@@ -92,6 +105,18 @@ public class DetailPembelianFragment extends Fragment {
 
       Toast.makeText(getContext(), pesan, Toast.LENGTH_SHORT).show();
     }
+
+    btCart.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        AppDatabase db = AppDatabase.getInstance(requireContext());
+
+        Cart cart = new Cart(albumId, cover, title, artist, price);
+        db.cartDao().insertCart(cart);
+
+        Toast.makeText(getContext(), "Album ditambahkan ke keranjang", Toast.LENGTH_SHORT).show();
+      }
+    });
 
     return view;
   }

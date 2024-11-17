@@ -56,11 +56,35 @@
   <TextView
     android:id="@+id/tvDetail"
     android:layout_width="340dp"
-    android:layout_height="300dp"
+    android:layout_height="200dp"
     android:layout_marginTop="20dp"
     android:textColor="@color/black"
     android:textSize="14dp"
     app:layout_constraintStart_toStartOf="@+id/tvPrice"
     app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
+
+  <Button
+    android:id="@+id/btWishlist"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:background="@drawable/wishlist_icon"
+    android:layout_marginStart="30dp"
+    android:layout_marginBottom="30dp"
+    android:backgroundTint="@color/brown"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
+
+  <Button
+    android:id="@+id/btCart"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:background="@drawable/cart_icon"
+    android:layout_marginStart="30dp"
+    android:backgroundTint="@color/brown"
+    app:layout_constraintBottom_toBottomOf="@+id/btWishlist"
+    app:layout_constraintStart_toEndOf="@+id/btWishlist" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,18 +6,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.vindme.R;
+import com.example.vindme.activity.cart.AppDatabase;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -92,7 +95,6 @@ public class HomeFragment extends Fragment {
     fetchAlbums();
 
     return view;
-    // Inflate the layout for this fragment
   }
 
   private void fetchAlbums() {
@@ -113,13 +115,15 @@ public class HomeFragment extends Fragment {
             Type albumListType = new TypeToken<List<Album>>(){}.getType();
             List<Album> albums = gson.fromJson(json, albumListType);
 
+            saveAlbumsToDatabase(albums);
+
             albumList.clear();
             albumList.addAll(albums);
             homeAdapter.notifyDataSetChanged();
 
           } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(getContext(), "Error parsing data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error " + e.getMessage(), Toast.LENGTH_SHORT).show();
           }
         } else {
           Toast.makeText(getContext(), "Gagal mengambil data", Toast.LENGTH_SHORT).show();
@@ -131,5 +135,21 @@ public class HomeFragment extends Fragment {
         Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
       }
     });
+  }
+
+  private void saveAlbumsToDatabase(List<Album> albums) {
+    AppDatabase db = AppDatabase.getInstance(getContext());
+
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        for (Album album : albums) {
+          Album existingAlbum = db.albumDao().getAlbumById(album.getAlbumId());
+          if (existingAlbum == null) {
+            db.albumDao().insertAlbums(album);
+          }
+        }
+      }
+    }).start();
   }
 }
