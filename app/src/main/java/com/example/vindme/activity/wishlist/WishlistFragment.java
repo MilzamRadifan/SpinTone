@@ -38,6 +38,7 @@ public class WishlistFragment extends Fragment {
   RecyclerView rvWishlist;
   WishlistAdapter wishlistAdapter;
   List<Wishlist> wishlistList;
+  AppDatabase appDatabase;
 
   // TODO: Rename parameter arguments, choose names that match
   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -92,43 +93,53 @@ public class WishlistFragment extends Fragment {
     rvWishlist.setAdapter(wishlistAdapter);
     rvWishlist.setLayoutManager(new GridLayoutManager(requireContext(), 1));
 
-    Thread th = new Thread(() -> {
-      String urlString = "http://10.0.2.2/ApiVindMe/apiWishlist.php";
-      try {
-        URL url = new URL(urlString);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.connect();
+    appDatabase = AppDatabase.getInstance(requireContext());
 
-        int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-          BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-          StringBuilder jsonData = new StringBuilder();
-          String line;
+    List<Wishlist> localWishlist = appDatabase.wishlistDao().getAllWishlist();
+    if (localWishlist.isEmpty()) {
+      Thread th = new Thread(() -> {
+        String urlString = "http://10.0.2.2/ApiVindMe/apiWishlist.php";
+        try {
+          URL url = new URL(urlString);
+          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+          connection.setRequestMethod("GET");
+          connection.connect();
 
-          while ((line = reader.readLine()) != null) {
-            jsonData.append(line);
+          int responseCode = connection.getResponseCode();
+          if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder jsonData = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+              jsonData.append(line);
+            }
+            reader.close();
+
+            List<Wishlist> apiWishlist = new Gson().fromJson(jsonData.toString(), new TypeToken<List<Wishlist>>(){}.getType());
+
+            appDatabase.wishlistDao().insertWishlists(apiWishlist);
+
+            getActivity().runOnUiThread(() -> {
+              wishlistList.clear();
+              wishlistList.addAll(apiWishlist);
+              wishlistAdapter.notifyDataSetChanged();
+            });
+          } else {
+            // Error handling
           }
-          reader.close();
-
-          List<Wishlist> apiWishlist = new Gson().fromJson(jsonData.toString(), new TypeToken<List<Wishlist>>(){}.getType());
-
-          getActivity().runOnUiThread(() -> {
-            wishlistList.clear();
-            wishlistList.addAll(apiWishlist);
-            wishlistAdapter.notifyDataSetChanged();
-          });
-
-        } else {
-          // Error handling
+          connection.disconnect();
+        } catch (Exception e) {
+          getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to fetch data", Toast.LENGTH_SHORT).show());
         }
-        connection.disconnect();
-      } catch (Exception e) {
-        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to fetch data", Toast.LENGTH_SHORT).show());
-      }
-    });
+      });
 
-    th.start();
+      th.start();
+    } else {
+      wishlistList.addAll(localWishlist);
+      wishlistAdapter.notifyDataSetChanged();
+    }
+
 
     return view;
   }

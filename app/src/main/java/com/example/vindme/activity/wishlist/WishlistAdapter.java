@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.Wishli
   public static class WishlistViewHolder extends RecyclerView.ViewHolder {
     ImageView ivCover;
     TextView tvArtist, tvDescription, tvPrice;
+    Button btDelete;
 
     public WishlistViewHolder(@NonNull View itemView) {
       super(itemView);
@@ -35,6 +37,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.Wishli
       tvArtist = itemView.findViewById(R.id.tvArtist);
       tvDescription = itemView.findViewById(R.id.tvDescription);
       tvPrice = itemView.findViewById(R.id.tvPrice);
+      btDelete = itemView.findViewById(R.id.btDelete);
     }
   }
 
@@ -56,6 +59,16 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.Wishli
 //    holder.ivCover.setOnClickListener(v -> {
 //      Toast.makeText(context, wishlist.getJudulAlbum(), Toast.LENGTH_SHORT).show();
 //    });
+    holder.btDelete.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        AppDatabase db = AppDatabase.getInstance(context);
+        db.wishlistDao().deleteWishlist(wishlist.getIdWishlist());
+        wishlistList.remove(holder.getAdapterPosition());
+        notifyItemRemoved(holder.getAdapterPosition());
+        Toast.makeText(context, "Wishlist Berhasil dihapus", Toast.LENGTH_SHORT).show();
+      }
+    });
 
   }
 

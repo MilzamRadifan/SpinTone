@@ -59,7 +59,7 @@
     app:layout_constraintStart_toStartOf="@+id/tvPrice" />4
 
   <Button
-    android:id="@+id/button2"
+    android:id="@+id/btDelete"
     android:layout_width="20dp"
     android:layout_height="20dp"
     android:background="@drawable/trach_icon"

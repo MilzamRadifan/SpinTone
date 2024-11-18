@@ -95,7 +95,7 @@ public class WishlistActivity extends AppCompatActivity {
 
     if (savedInstanceState == null) {
       getSupportFragmentManager().beginTransaction()
-          .replace(R.id.fragment_container, new AddWishlistFragment())
+          .replace(R.id.fragment_container, new WishlistFragment())
           .commit();
     }
 
